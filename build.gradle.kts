@@ -95,6 +95,10 @@ tasks.withType<KotlinCompile> {
     }
 }
 
+tasks.withType<Jar> {
+    duplicatesStrategy = org.gradle.api.file.DuplicatesStrategy.INCLUDE
+}
+
 tasks.withType<Test> {
     useJUnitPlatform()
 }
