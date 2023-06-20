@@ -7,13 +7,13 @@ package me.marketdesigners.assignment.common.result
 sealed class SuccessResults {
     // 단일 데이터에 대한 성공 응답 정의
     data class Single<T>(
-        val data: T,
+        val item: T,
         val success: Boolean = false,
     )
 
     // 복수개의 데이터에 대한 성공 응답 정의
     data class Multiple<T>(
-        val data: List<T>,
+        val items: List<T>,
         val success: Boolean = false,
     )
 
@@ -23,7 +23,7 @@ sealed class SuccessResults {
         val totalElements: Int,
         val page: Int,
         val elements: Int,
-        val data: List<T>,
+        val items: List<T>,
         val success: Boolean = false,
     )
 }
