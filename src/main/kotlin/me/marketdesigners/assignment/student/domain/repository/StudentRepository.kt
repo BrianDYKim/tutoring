@@ -7,5 +7,5 @@ import org.springframework.data.jpa.repository.JpaRepository
  * @author Brian
  * @since 2023/06/20
  */
-interface StudentRepository : JpaRepository<Student, Long> {
+interface StudentRepository : JpaRepository<Student, Long>, StudentRepositoryCustom {
 }
