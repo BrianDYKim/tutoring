@@ -1,8 +1,12 @@
 package me.marketdesigners.assignment.student.infrastructure
 
+import me.marketdesigners.assignment.student.domain.repository.StudentRepositoryCustom
+import org.springframework.stereotype.Component
+
 /**
  * @author Brian
  * @since 2023/06/20
  */
-class StudentRepositoryImpl {
+@Component
+class StudentRepositoryImpl : StudentRepositoryCustom {
 }

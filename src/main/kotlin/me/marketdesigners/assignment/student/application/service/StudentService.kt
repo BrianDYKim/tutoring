@@ -1,4 +1,4 @@
-package me.marketdesigners.assignment.student.application
+package me.marketdesigners.assignment.student.application.service
 
 /**
  * @author Brian

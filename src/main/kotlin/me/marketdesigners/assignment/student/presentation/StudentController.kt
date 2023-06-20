@@ -1,5 +1,6 @@
 package me.marketdesigners.assignment.student.presentation
 
+import me.marketdesigners.assignment.student.application.service.StudentService
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
@@ -9,5 +10,7 @@ import org.springframework.web.bind.annotation.RestController
  */
 @RestController
 @RequestMapping("/api/students")
-class StudentController {
+class StudentController(
+    private val studentService: StudentService,
+) {
 }
