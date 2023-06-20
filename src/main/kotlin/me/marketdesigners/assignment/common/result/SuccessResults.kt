@@ -8,11 +8,13 @@ sealed class SuccessResults {
     // 단일 데이터에 대한 성공 응답 정의
     data class Single<T>(
         val data: T,
+        val success: Boolean = false,
     )
 
     // 복수개의 데이터에 대한 성공 응답 정의
     data class Multiple<T>(
         val data: List<T>,
+        val success: Boolean = false,
     )
 
     // 페이지네이션 된 성공 응답 정의
@@ -22,5 +24,6 @@ sealed class SuccessResults {
         val page: Int,
         val elements: Int,
         val data: List<T>,
+        val success: Boolean = false,
     )
 }

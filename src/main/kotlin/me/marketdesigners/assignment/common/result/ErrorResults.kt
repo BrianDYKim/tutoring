@@ -12,7 +12,7 @@ sealed class ErrorResults {
      * Error에 대한 Response를 담당하는 data class
      * @param error 에러메시지
      */
-    data class Response(val error: String) {
+    data class Response(val error: String, val success: Boolean = false) {
         companion object {
             // 필드에서 에러가 발생한게 아닌 비지니스 로직 처리 과정에서 발생한 에러에 대한 payload
             fun of(errorCode: ErrorCode): Response = Response(errorCode.message)
