@@ -1,6 +1,5 @@
 package me.marketdesigners.assignment.course.application.dto
 
-import me.marketdesigners.assignment.course.domain.entity.Course
 import me.marketdesigners.assignment.course.domain.vo.CourseType
 import me.marketdesigners.assignment.course.domain.vo.SellingInfo
 import java.time.LocalDateTime
@@ -11,8 +10,8 @@ import java.time.LocalDateTime
  * @since 2023/06/20
  */
 sealed class CourseOutbound {
-    // 목록 조회에서 사용되는 response dto
-    data class GetSimpleResponse(
+    // 목록 조회시 사용되는 data 객체
+    data class PaginatedResponseData(
         val id: Long,
         val language: String,
         val courseType: CourseType,
@@ -22,21 +21,11 @@ sealed class CourseOutbound {
         val price: Int,
         val sellingInfo: SellingInfo,
         val createdAt: LocalDateTime,
-    ) {
-        companion object {
-            fun of(course: Course): GetSimpleResponse = with(course) {
-                GetSimpleResponse(
-                    this.id!!,
-                    this.language,
-                    this.courseType,
-                    this.courseDuration,
-                    this.lessonTime,
-                    this.lessonsCount,
-                    this.price,
-                    this.sellingInfo,
-                    this.createdAt
-                )
-            }
-        }
-    }
+    )
+
+    // 목록 조회시 데이터의 목록과 함께 데이터의 총 개수도 저장해주는 response dto 객체
+    data class PaginatedResponse(
+        val totalElements: Long,
+        val items: List<PaginatedResponseData>
+    )
 }
