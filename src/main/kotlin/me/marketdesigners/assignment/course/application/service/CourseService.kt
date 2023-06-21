@@ -9,5 +9,5 @@ import me.marketdesigners.assignment.course.application.dto.CourseOutbound
  */
 interface CourseService {
     // 주어진 조건에 맞는 수강코스를 찾아오는 메소드
-    fun searchAvailableCourses(getRequest: CourseInbound.GetSimpleRequest): List<CourseOutbound.PaginatedResponseData>
+    fun searchAvailableCourses(getRequest: CourseInbound.GetSimpleRequest): CourseOutbound.PaginatedResponse
 }

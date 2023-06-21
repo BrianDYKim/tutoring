@@ -37,9 +37,10 @@ class CourseRepositoryImpl(private val jpaQueryFactory: JPAQueryFactory) : Cours
             )
         )
             .from(course)
-            .where(whereExpression)
+            .where(whereExpression) // 조건절에 맞춰서 쿼리
+            .orderBy(course.createdAt.desc()) // 생성일자 기준으로 내림차순 정렬
             .offset(getRequest.pageable.offset)
-            .limit(getRequest.pageable.pageSize.toLong())
+            .limit(getRequest.pageable.pageSize.toLong()) // 정해진 페이지네이션 규칙에 따라 데이터 수집
             .fetch()
 
         // 조건에 맞는 아이템의 총 개수를 가져오기

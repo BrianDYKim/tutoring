@@ -16,9 +16,8 @@ class CourseServiceImpl(
     private val courseRepository: CourseRepository,
     private val courseValidator: CourseValidator
 ) : CourseService {
-
     @Transactional(readOnly = true)
-    override fun searchAvailableCourses(getRequest: CourseInbound.GetSimpleRequest): List<CourseOutbound.PaginatedResponseData> {
-        TODO("Not yet implemented")
+    override fun searchAvailableCourses(getRequest: CourseInbound.GetSimpleRequest): CourseOutbound.PaginatedResponse {
+        return this.courseRepository.searchCoursesByCriteria(getRequest)
     }
 }

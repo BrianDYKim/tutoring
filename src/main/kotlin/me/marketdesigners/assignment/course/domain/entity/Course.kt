@@ -21,7 +21,7 @@ class Course(
     var courseDuration: Int = 0,
     @get:Column(name = "lesson_time", nullable = false)
     var lessonTime: Int = 0,
-    @get:Column(name = "lesson_count", nullable = false)
+    @get:Column(name = "lessons_count", nullable = false)
     var lessonsCount: Int = 0,
     @get:Column(name = "price", nullable = false)
     var price: Int = 0,
