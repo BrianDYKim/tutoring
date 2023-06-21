@@ -14,7 +14,7 @@ import me.marketdesigners.assignment.lesson.domain.vo.LessonTime
 class Lesson(
     @get:Id
     @get:GeneratedValue(strategy = GenerationType.IDENTITY)
-    var id: Long = 0,
+    var id: Long? = 0,
     @get:Column(name = "student_id", nullable = false)
     var studentId: Long = 0,
     @get:Column(name = "tutor_id", nullable = false)
@@ -23,4 +23,19 @@ class Lesson(
     var lessonSubscriptionId: Long = 0,
     @get:Embedded
     var lessonTime: LessonTime = LessonTime(),
-) : BaseEntity()
+) : BaseEntity() {
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        val that = other as Lesson
+
+        if (id != that.id) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        return id?.hashCode() ?: 0
+    }
+}
