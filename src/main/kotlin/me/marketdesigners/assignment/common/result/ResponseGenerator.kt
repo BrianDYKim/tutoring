@@ -18,7 +18,7 @@ object ResponseGenerator {
     fun <T> getMultipleDataResponse(items: List<T>): SuccessResults.Multiple<T> = SuccessResults.Multiple(items)
 
     // 페이지네이션 된 데이터를 가지는 성공에 대한 결과를 리턴하는 메소드
-    fun <T> getPaginatedDataResponse(totalElements: Int, page: Int, items: List<T>): SuccessResults.Paginated<T> {
+    fun <T> getPaginatedDataResponse(totalElements: Long, page: Int, items: List<T>): SuccessResults.Paginated<T> {
         val totalPages = Math.ceil(totalElements.toDouble() / items.size.toDouble()).toInt()
 
         return SuccessResults.Paginated(totalPages, totalElements, page, items.size, items)

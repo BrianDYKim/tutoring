@@ -1,4 +1,4 @@
-package me.marketdesigners.assignment.lesson.infrastructure
+package me.marketdesigners.assignment.lesson.infrastructure.dao
 
 import me.marketdesigners.assignment.lesson.domain.repository.LessonRepositoryCustom
 import org.springframework.stereotype.Component

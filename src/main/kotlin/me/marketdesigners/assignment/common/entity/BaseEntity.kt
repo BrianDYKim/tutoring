@@ -15,7 +15,7 @@ import java.time.LocalDateTime
  */
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener::class)
-open class BaseEntity(
+abstract class BaseEntity(
     @get:CreatedDate
     @get:Column(name = "created_at", nullable = false, updatable = false)
     var createdAt: LocalDateTime = LocalDateTime.now(),
@@ -26,4 +26,10 @@ open class BaseEntity(
     var deletedAt: LocalDateTime? = null,
     @get:Column(name = "is_deleted", nullable = false)
     var isDeleted: Boolean = false,
-)
+) {
+    // equals를 반드시 구현하도록 하여 id 식별자를 이용해서 동등성 비교를 수행한다
+    abstract override fun equals(other: Any?): Boolean
+
+    // hashCode를 반드시 구현하도록 하여 persistence context에서 동등한 엔티티에 대해서 같은 hashCode 값을 갖도록 한다
+    abstract override fun hashCode(): Int
+}
