@@ -1,5 +1,6 @@
 package me.marketdesigners.assignment.course.application.dto
 
+import me.marketdesigners.assignment.course.domain.entity.enums.CourseLanguage
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
@@ -11,7 +12,7 @@ import org.springframework.data.domain.Sort
  */
 sealed class CourseInbound {
     data class GetSimpleRequest(
-        val language: String,
+        val language: CourseLanguage,
         val isVoiceAvailable: Boolean,
         val isChatAvailable: Boolean,
         val isVideoAvailable: Boolean,
@@ -19,7 +20,7 @@ sealed class CourseInbound {
     ) {
         companion object {
             fun of(
-                language: String,
+                language: CourseLanguage,
                 isVoiceAvailable: Boolean,
                 isChatAvailable: Boolean,
                 isVideoAvailable: Boolean,

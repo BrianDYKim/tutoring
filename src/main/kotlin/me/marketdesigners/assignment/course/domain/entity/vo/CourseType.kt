@@ -1,4 +1,4 @@
-package me.marketdesigners.assignment.course.domain.vo
+package me.marketdesigners.assignment.course.domain.entity.vo
 
 import jakarta.persistence.Column
 import jakarta.persistence.Embeddable

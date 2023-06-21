@@ -1,7 +1,8 @@
 package me.marketdesigners.assignment.course.application.dto
 
-import me.marketdesigners.assignment.course.domain.vo.CourseType
-import me.marketdesigners.assignment.course.domain.vo.SellingInfo
+import me.marketdesigners.assignment.course.domain.entity.enums.CourseLanguage
+import me.marketdesigners.assignment.course.domain.entity.vo.CourseType
+import me.marketdesigners.assignment.course.domain.entity.vo.SellingInfo
 import java.time.LocalDateTime
 
 /**
@@ -13,7 +14,7 @@ sealed class CourseOutbound {
     // 목록 조회시 사용되는 data 객체
     data class PaginatedResponseData(
         val id: Long,
-        val language: String,
+        val language: CourseLanguage,
         val courseType: CourseType,
         val courseDuration: Int,
         val lessonTime: Int,

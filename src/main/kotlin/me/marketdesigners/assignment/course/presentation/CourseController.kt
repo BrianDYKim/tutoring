@@ -5,6 +5,7 @@ import me.marketdesigners.assignment.common.result.SuccessResults
 import me.marketdesigners.assignment.course.application.dto.CourseInbound
 import me.marketdesigners.assignment.course.application.dto.CourseOutbound
 import me.marketdesigners.assignment.course.application.service.CourseService
+import me.marketdesigners.assignment.course.domain.entity.enums.CourseLanguage
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
@@ -19,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController
 class CourseController(private val courseService: CourseService) {
     @GetMapping("")
     fun searchAvailableCourses(
-        @RequestParam("language") language: String,
+        @RequestParam("language") language: CourseLanguage,
         @RequestParam("voice") isVoiceAvailable: Boolean,
         @RequestParam("chat") isChatAvailable: Boolean,
         @RequestParam("video") isVideoAvailable: Boolean,

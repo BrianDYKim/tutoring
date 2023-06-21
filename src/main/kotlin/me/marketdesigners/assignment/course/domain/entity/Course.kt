@@ -2,8 +2,9 @@ package me.marketdesigners.assignment.course.domain.entity
 
 import jakarta.persistence.*
 import me.marketdesigners.assignment.common.entity.BaseEntity
-import me.marketdesigners.assignment.course.domain.vo.CourseType
-import me.marketdesigners.assignment.course.domain.vo.SellingInfo
+import me.marketdesigners.assignment.course.domain.entity.enums.CourseLanguage
+import me.marketdesigners.assignment.course.domain.entity.vo.CourseType
+import me.marketdesigners.assignment.course.domain.entity.vo.SellingInfo
 
 /**
  * @author Doyeop Kim
@@ -16,7 +17,8 @@ class Course(
     @get:GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = 0,
     @get:Column(name = "language", nullable = false)
-    var language: String = "",
+    @get:Enumerated(EnumType.STRING)
+    var language: CourseLanguage = CourseLanguage.CHINESE,
     @get:Column(name = "course_duration", nullable = false)
     var courseDuration: Int = 0,
     @get:Column(name = "lesson_time", nullable = false)
