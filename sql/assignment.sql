@@ -82,14 +82,22 @@ create table tutors
 
 create table lesson_subscriptions
 (
-    id                bigint(20) primary key auto_increment,
-    student_id        bigint(20) not null,
-    course_id         bigint(20) not null,
-    lesson_left_count int        not null,
-    created_at        datetime   not null default now(),
-    updated_at        datetime   null,
-    deleted_at        datetime   null,
-    is_deleted        tinyint(1) not null default 0
+    id                    bigint(20) primary key auto_increment,
+    student_id            bigint(20) not null,
+    course_id             bigint(20) not null,
+    is_voice_available    tinyint(1) not null default 0,
+    is_chatting_available tinyint(1) not null default 0,
+    is_video_available    tinyint(1) not null default 0,
+    lesson_left_count     int        not null,
+    created_at            datetime   not null default now(),
+    updated_at            datetime   null,
+    deleted_at            datetime   null,
+    is_deleted            tinyint(1) not null default 0
 );
 
 explain lesson_subscriptions;
+
+select *
+from lesson_subscriptions;
+
+drop table lesson_subscriptions;
