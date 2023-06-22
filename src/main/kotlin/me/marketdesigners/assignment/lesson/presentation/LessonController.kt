@@ -1,6 +1,8 @@
 package me.marketdesigners.assignment.lesson.presentation
 
 import jakarta.validation.Valid
+import me.marketdesigners.assignment.common.result.ResponseGenerator
+import me.marketdesigners.assignment.common.result.SuccessResults
 import me.marketdesigners.assignment.lesson.application.dto.LessonInbound
 import me.marketdesigners.assignment.lesson.application.dto.LessonOutbound
 import me.marketdesigners.assignment.lesson.application.service.LessonService
@@ -20,7 +22,8 @@ class LessonController(
 ) {
     // 수업 시작을 처리하는 핸들러 메소드
     @PostMapping("/start")
-    fun startLesson(@Valid @RequestBody startRequest: LessonInbound.StartRequest): LessonOutbound.StartResponse {
-        TODO("Not yet implemented")
+    fun startLesson(@Valid @RequestBody startRequest: LessonInbound.StartRequest): SuccessResults.Single<LessonOutbound.StartResponse> {
+        val startResponse = lessonService.startLesson(startRequest)
+        return ResponseGenerator.getSingleDataResponse(startResponse)
     }
 }
