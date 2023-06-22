@@ -131,7 +131,7 @@ class LessonServiceTests {
         }
 
         // then
-        val exception = shouldThrow<ResourceNotFoundException> { lessonService.startLesson(startRequest) }
+        val exception = shouldThrow<SubscriptionNotLeftException> { lessonService.startLesson(startRequest) }
         assertEquals(exception.errorCode, ErrorCode.SUBSCRIPTION_NOT_LEFT_ERROR)
     }
 
@@ -149,12 +149,12 @@ class LessonServiceTests {
         val studentId: Long = 1
         val tutorId: Long = 1
         val lessonSubscriptionId: Long = 1
-        val startRequest = LessonInbound.StartRequest(1, 1, 1)
+        val startRequest = LessonInbound.StartRequest(studentId, tutorId, lessonSubscriptionId)
 
         every { studentRepository.findByIdOrNull(studentId) } returns Student().apply {
             this.id = studentId
         }
-        // 튜터 = 음성 x 채팅 o 화상 x
+
         every { tutorRepository.findByIdOrNull(tutorId) } returns Tutor().apply {
             this.id = tutorId
             this.tutorType = TutorType(
