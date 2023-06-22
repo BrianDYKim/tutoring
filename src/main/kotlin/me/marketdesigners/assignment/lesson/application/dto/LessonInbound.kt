@@ -2,6 +2,8 @@ package me.marketdesigners.assignment.lesson.application.dto
 
 import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Positive
+import me.marketdesigners.assignment.lesson.domain.entity.Lesson
+import me.marketdesigners.assignment.lesson.domain.entity.vo.LessonTime
 
 /**
  * @author Doyeop Kim
@@ -19,5 +21,11 @@ sealed class LessonInbound {
         @field:NotNull
         @field:Positive
         val lessonSubscriptionId: Long,
-    )
+    ) {
+        // request dto -> entity
+        fun toEntity(): Lesson {
+            val lessonTime = LessonTime()
+            return Lesson(null, studentId, tutorId, lessonSubscriptionId, lessonTime)
+        }
+    }
 }

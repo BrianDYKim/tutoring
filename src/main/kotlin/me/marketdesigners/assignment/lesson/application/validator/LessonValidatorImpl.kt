@@ -44,7 +44,7 @@ class LessonValidatorImpl(
         rejectIfEntityExists(foundSubscription, ErrorCode.SUBSCRIPTION_NOT_FOUND_ERROR)
 
         // 수강권의 잔여 횟수가 0 이하인 경우 예외처리한다
-        if (foundSubscription!!.lessonLeftCount <= 0) {
+        if (!foundSubscription!!.hasPositiveLeftCount()) {
             throw SubscriptionNotLeftException()
         }
 

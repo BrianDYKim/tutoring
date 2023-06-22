@@ -9,5 +9,5 @@ import org.springframework.stereotype.Repository
  * @since 2023/06/21
  */
 @Repository
-interface LessonSubscriptionRepository : JpaRepository<LessonSubscription, Long> {
+interface LessonSubscriptionRepository : JpaRepository<LessonSubscription, Long>, LessonSubscriptionRepositoryCustom {
 }

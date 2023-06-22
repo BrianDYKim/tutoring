@@ -1,10 +1,12 @@
 package me.marketdesigners.assignment.lesson.application.service
 
 import io.kotest.assertions.throwables.shouldThrow
+import io.kotest.mpp.start
 import io.mockk.every
 import io.mockk.junit5.MockKExtension
 import io.mockk.mockk
 import io.mockk.spyk
+import io.mockk.verify
 import me.marketdesigners.assignment.common.error.ErrorCode
 import me.marketdesigners.assignment.common.exceptions.custom.ResourceNotFoundException
 import me.marketdesigners.assignment.common.exceptions.custom.SubscriptionNotLeftException
@@ -12,6 +14,7 @@ import me.marketdesigners.assignment.common.exceptions.custom.TutorNotSupportsLe
 import me.marketdesigners.assignment.lesson.application.dto.LessonInbound
 import me.marketdesigners.assignment.lesson.application.validator.LessonValidator
 import me.marketdesigners.assignment.lesson.application.validator.LessonValidatorImpl
+import me.marketdesigners.assignment.lesson.domain.entity.Lesson
 import me.marketdesigners.assignment.lesson.domain.repository.LessonRepository
 import me.marketdesigners.assignment.lessonSubscription.domain.entity.LessonSubscription
 import me.marketdesigners.assignment.lessonSubscription.domain.entity.vo.SubscriptionType
@@ -50,7 +53,7 @@ class LessonServiceTests {
         tutorRepository = mockk(relaxed = true, relaxUnitFun = true)
         lessonSubscriptionRepository = mockk(relaxed = true, relaxUnitFun = true)
         lessonValidator = spyk(LessonValidatorImpl(studentRepository, tutorRepository, lessonSubscriptionRepository))
-        lessonService = spyk(LessonServiceImpl(lessonValidator, lessonRepository))
+        lessonService = spyk(LessonServiceImpl(lessonValidator, lessonRepository, lessonSubscriptionRepository))
     }
 
     @ParameterizedTest
@@ -182,6 +185,54 @@ class LessonServiceTests {
 
     @Test
     fun `모든 조건을 만족하여 수업이 성사된다`(): Unit {
+        // given
+        val studentId: Long = 1
+        val tutorId: Long = 1
+        val lessonSubscriptionId: Long = 1
+        val lessonId: Long = 1
 
+        val startRequest = LessonInbound.StartRequest(studentId, tutorId, lessonSubscriptionId)
+
+        // 가짜 객체 선언
+        val fakeStudent = Student().apply {
+            this.id = studentId
+        }
+
+        val fakeTutor = Tutor().apply {
+            this.id = tutorId
+            this.tutorType = TutorType(isVoiceAvailable = true, isChattingAvailable = true, isVideoAvailable = true)
+        }
+
+        val fakeSubscription = LessonSubscription().apply {
+            this.id = lessonSubscriptionId
+            this.lessonLeftCount = 31
+            this.subscriptionType = SubscriptionType(isVoiceAvailable = true, isChattingAvailable = true, isVideoAvailable = true)
+        }
+
+        // mocking
+        every { studentRepository.findByIdOrNull(studentId) } returns fakeStudent
+        every { tutorRepository.findByIdOrNull(tutorId) } returns fakeTutor
+        every { lessonSubscriptionRepository.findByIdOrNull(lessonSubscriptionId) } returns fakeSubscription
+        every { lessonSubscriptionRepository.minusLeftCount(lessonSubscriptionId) } returns true
+        every { lessonRepository.save(startRequest.toEntity()) } returns startRequest.toEntity().apply {
+            this.id = lessonId
+        }
+
+        // when
+        val lessonStartResponse = lessonService.startLesson(startRequest)
+
+        // then
+        verify(exactly = 1) { studentRepository.findByIdOrNull(studentId) }
+        verify(exactly = 1) { tutorRepository.findByIdOrNull(tutorId) }
+        verify(exactly = 1) { lessonSubscriptionRepository.findByIdOrNull(lessonSubscriptionId) }
+        verify(exactly = 1) { lessonSubscriptionRepository.minusLeftCount(lessonSubscriptionId) }
+        verify(exactly = 1) { lessonRepository.save(startRequest.toEntity()) }
+
+        with(lessonStartResponse) {
+            assertEquals(this.id, lessonId)
+            assertEquals(this.studentId, studentId)
+            assertEquals(this.tutorId, tutorId)
+            assertEquals(this.lessonSubscriptionId, lessonSubscriptionId)
+        }
     }
 }
