@@ -1,4 +1,4 @@
-package me.marketdesigners.assignment.tutor.domain.enums
+package me.marketdesigners.assignment.tutor.domain.entity.enums
 
 /**
  * @author Doyeop Kim

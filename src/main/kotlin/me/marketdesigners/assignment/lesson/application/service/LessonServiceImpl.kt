@@ -16,6 +16,8 @@ class LessonServiceImpl(
     private val lessonRepository: LessonRepository,
 ) : LessonService {
     override fun startLesson(startRequest: LessonInbound.StartRequest): LessonOutbound.StartResponse {
+        // 검증을 수행
+        this.lessonValidator.isStartAvailable(startRequest)
         TODO("Not yet implemented")
     }
 }

@@ -2,7 +2,7 @@ package me.marketdesigners.assignment.lesson.domain.entity
 
 import jakarta.persistence.*
 import me.marketdesigners.assignment.common.entity.BaseEntity
-import me.marketdesigners.assignment.lesson.domain.vo.LessonTime
+import me.marketdesigners.assignment.lesson.domain.entity.vo.LessonTime
 
 /**
  * 수업에 대한 entity를 표현하는 객체

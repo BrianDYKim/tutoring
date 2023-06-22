@@ -2,7 +2,8 @@ package me.marketdesigners.assignment.tutor.domain.entity
 
 import jakarta.persistence.*
 import me.marketdesigners.assignment.common.entity.BaseEntity
-import me.marketdesigners.assignment.tutor.domain.enums.TutorLanguage
+import me.marketdesigners.assignment.tutor.domain.entity.enums.TutorLanguage
+import me.marketdesigners.assignment.tutor.domain.entity.vo.TutorType
 
 /**
  * @author Doyeop Kim
@@ -23,12 +24,8 @@ class Tutor(
     @get:Column(name = "language", nullable = false)
     @get:Enumerated(EnumType.STRING)
     var language: TutorLanguage = TutorLanguage.ENGLISH,
-    @get:Column(name = "is_voice_available", nullable = false)
-    var isVoiceAvailable: Boolean = false,
-    @get:Column(name = "is_chatting_available", nullable = false)
-    var isChattingAvailable: Boolean = false,
-    @get:Column(name = "is_video_available", nullable = false)
-    var isVideoAvailable: Boolean = false,
+    @get:Embedded
+    var tutorType: TutorType = TutorType(),
 ) : BaseEntity() {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

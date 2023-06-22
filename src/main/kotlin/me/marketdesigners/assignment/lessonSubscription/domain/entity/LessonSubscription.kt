@@ -2,6 +2,7 @@ package me.marketdesigners.assignment.lessonSubscription.domain.entity
 
 import jakarta.persistence.*
 import me.marketdesigners.assignment.common.entity.BaseEntity
+import me.marketdesigners.assignment.lessonSubscription.domain.entity.vo.SubscriptionType
 
 /**
  * @author Doyeop Kim
@@ -19,6 +20,8 @@ class LessonSubscription(
     var courseId: Long = 0,
     @get:Column(name = "lesson_left_count", nullable = false)
     var lessonLeftCount: Int = 0,
+    @get:Embedded
+    var subscriptionType: SubscriptionType = SubscriptionType(),
 ) : BaseEntity() {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
