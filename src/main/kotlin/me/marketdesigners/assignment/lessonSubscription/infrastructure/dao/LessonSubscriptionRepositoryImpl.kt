@@ -24,7 +24,10 @@ class LessonSubscriptionRepositoryImpl(
 
         return foundSubscription?.run {
             jpaQueryFactory.update(lessonSubscription)
-                .set(lessonSubscription.lessonLeftCount, lessonSubscription.lessonLeftCount.subtract(1))
+                .set(
+                    lessonSubscription.lessonCountInfo.lessonLeftCount,
+                    lessonSubscription.lessonCountInfo.lessonLeftCount.subtract(1)
+                )
                 .set(lessonSubscription.updatedAt, LocalDateTime.now())
                 .where(lessonSubscription.id.eq(subscriptionId))
                 .execute()
