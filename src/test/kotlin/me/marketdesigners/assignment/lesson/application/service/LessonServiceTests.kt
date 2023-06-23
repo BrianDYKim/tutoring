@@ -1,7 +1,6 @@
 package me.marketdesigners.assignment.lesson.application.service
 
 import io.kotest.assertions.throwables.shouldThrow
-import io.kotest.mpp.start
 import io.mockk.every
 import io.mockk.junit5.MockKExtension
 import io.mockk.mockk
@@ -9,14 +8,15 @@ import io.mockk.spyk
 import io.mockk.verify
 import me.marketdesigners.assignment.common.error.ErrorCode
 import me.marketdesigners.assignment.common.exceptions.custom.ResourceNotFoundException
+import me.marketdesigners.assignment.common.exceptions.custom.SubscriptionExpiredException
 import me.marketdesigners.assignment.common.exceptions.custom.SubscriptionNotLeftException
 import me.marketdesigners.assignment.common.exceptions.custom.TutorNotSupportsLessonTypeException
 import me.marketdesigners.assignment.lesson.application.dto.LessonInbound
 import me.marketdesigners.assignment.lesson.application.validator.LessonValidator
 import me.marketdesigners.assignment.lesson.application.validator.LessonValidatorImpl
-import me.marketdesigners.assignment.lesson.domain.entity.Lesson
 import me.marketdesigners.assignment.lesson.domain.repository.LessonRepository
 import me.marketdesigners.assignment.lessonSubscription.domain.entity.LessonSubscription
+import me.marketdesigners.assignment.lessonSubscription.domain.entity.vo.SubscriptionPeriod
 import me.marketdesigners.assignment.lessonSubscription.domain.entity.vo.SubscriptionType
 import me.marketdesigners.assignment.lessonSubscription.domain.repository.LessonSubscriptionRepository
 import me.marketdesigners.assignment.student.domain.entity.Student
@@ -30,8 +30,8 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
-import org.junit.jupiter.params.provider.ValueSource
 import org.springframework.data.repository.findByIdOrNull
+import java.time.LocalDate
 
 /**
  * @author Doyeop Kim
@@ -138,6 +138,45 @@ class LessonServiceTests {
         assertEquals(exception.errorCode, ErrorCode.SUBSCRIPTION_NOT_LEFT_ERROR)
     }
 
+    @Test
+    fun `수강권이 만료되어있어 실패한다`(): Unit {
+        // given
+        val studentId: Long = 1
+        val tutorId: Long = 1
+        val lessonSubscriptionId: Long = 1
+        val lessonId: Long = 1
+
+        val startRequest = LessonInbound.StartRequest(studentId, tutorId, lessonSubscriptionId)
+
+        // 가짜 객체 선언
+        val fakeStudent = Student().apply {
+            this.id = studentId
+        }
+
+        val fakeTutor = Tutor().apply {
+            this.id = tutorId
+            this.tutorType = TutorType(isVoiceAvailable = true, isChattingAvailable = true, isVideoAvailable = true)
+        }
+
+        val fakeSubscription = LessonSubscription().apply {
+            this.id = lessonSubscriptionId
+            this.lessonLeftCount = 31
+            this.subscriptionPeriod =
+                SubscriptionPeriod(startDate = LocalDate.now().minusDays(90), endDate = LocalDate.now().minusDays(1))
+            this.subscriptionType =
+                SubscriptionType(isVoiceAvailable = true, isChattingAvailable = true, isVideoAvailable = true)
+        }
+
+        // mocking
+        every { studentRepository.findByIdOrNull(studentId) } returns fakeStudent
+        every { tutorRepository.findByIdOrNull(tutorId) } returns fakeTutor
+        every { lessonSubscriptionRepository.findByIdOrNull(lessonSubscriptionId) } returns fakeSubscription
+
+        // then
+        val exception = shouldThrow<SubscriptionExpiredException> { lessonService.startLesson(startRequest) }
+        assertEquals(exception.errorCode, ErrorCode.SUBSCRIPTION_EXPIRED_ERROR)
+    }
+
     @ParameterizedTest
     @CsvSource(value = ["false,true,false,true,true,true", "true,true,false,true,true,true", "false,true,false,false,true,true"])
     fun `튜터가 지원하는 수업 종류와 수강권의 수업 종류가 일치하지 않아 실패한다`(
@@ -180,7 +219,7 @@ class LessonServiceTests {
 
         // then
         val exception = shouldThrow<TutorNotSupportsLessonTypeException> { lessonService.startLesson(startRequest) }
-        assertEquals(exception.errorCode, ErrorCode.TUTOR_NOT_SUPPORTS_LESSON_TYPE_EXCEPTION)
+        assertEquals(exception.errorCode, ErrorCode.TUTOR_NOT_SUPPORTS_LESSON_TYPE_ERROR)
     }
 
     @Test
@@ -206,7 +245,8 @@ class LessonServiceTests {
         val fakeSubscription = LessonSubscription().apply {
             this.id = lessonSubscriptionId
             this.lessonLeftCount = 31
-            this.subscriptionType = SubscriptionType(isVoiceAvailable = true, isChattingAvailable = true, isVideoAvailable = true)
+            this.subscriptionType =
+                SubscriptionType(isVoiceAvailable = true, isChattingAvailable = true, isVideoAvailable = true)
         }
 
         // mocking

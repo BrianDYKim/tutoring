@@ -22,5 +22,6 @@ enum class ErrorCode(
     TUTOR_NOT_FOUND_ERROR(400, "튜터가 존재하지 않습니다"),
     SUBSCRIPTION_NOT_FOUND_ERROR(400, "수강권이 존재하지 않습니다"),
     SUBSCRIPTION_NOT_LEFT_ERROR(400, "수강권의 잔여 횟수가 없습니다"),
-    TUTOR_NOT_SUPPORTS_LESSON_TYPE_EXCEPTION(400, "튜터가 지원하지 않는 수업 유형입니다"),
+    TUTOR_NOT_SUPPORTS_LESSON_TYPE_ERROR(400, "튜터가 지원하지 않는 수업 유형입니다"),
+    SUBSCRIPTION_EXPIRED_ERROR(400, "수강권이 만료되었습니다"),
 }

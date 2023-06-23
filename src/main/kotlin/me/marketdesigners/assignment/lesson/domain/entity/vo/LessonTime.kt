@@ -10,7 +10,7 @@ import java.time.LocalDateTime
  * @since 2023/06/20
  */
 @Embeddable
-class LessonTime(
+data class LessonTime(
     @get:Column(name = "started_at", nullable = false, updatable = false)
     var startedAt: LocalDateTime = LocalDateTime.now(),
     @get:Column(name = "finished_at", nullable = true)

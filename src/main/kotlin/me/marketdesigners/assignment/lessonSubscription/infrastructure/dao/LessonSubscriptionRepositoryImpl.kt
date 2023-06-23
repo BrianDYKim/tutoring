@@ -2,10 +2,10 @@ package me.marketdesigners.assignment.lessonSubscription.infrastructure.dao
 
 import com.querydsl.jpa.impl.JPAQueryFactory
 import jakarta.persistence.LockModeType
-import me.marketdesigners.assignment.lessonSubscription.domain.entity.LessonSubscription
 import me.marketdesigners.assignment.lessonSubscription.domain.entity.QLessonSubscription.lessonSubscription
 import me.marketdesigners.assignment.lessonSubscription.domain.repository.LessonSubscriptionRepositoryCustom
 import org.springframework.stereotype.Component
+import java.time.LocalDateTime
 
 /**
  * @author Brian
@@ -16,16 +16,17 @@ class LessonSubscriptionRepositoryImpl(
     private val jpaQueryFactory: JPAQueryFactory
 ) : LessonSubscriptionRepositoryCustom {
     override fun minusLeftCount(subscriptionId: Long): Boolean {
+        // 발견한 수강권에 pessimistic lock을 설정하여 다른 트랜잭션이 해당 레코드를 수정하지 못하도록 설정한다
         val foundSubscription = jpaQueryFactory.selectFrom(lessonSubscription)
             .where(lessonSubscription.id.eq(subscriptionId))
+            .setLockMode(LockModeType.PESSIMISTIC_WRITE)
             .fetchOne()
 
-        return foundSubscription?.let {
-            // 비관적 잠금을 설정하여 동시성을 제어한다
+        return foundSubscription?.run {
             jpaQueryFactory.update(lessonSubscription)
-                .set(lessonSubscription.lessonLeftCount, it.lessonLeftCount - 1)
+                .set(lessonSubscription.lessonLeftCount, lessonSubscription.lessonLeftCount.subtract(1))
+                .set(lessonSubscription.updatedAt, LocalDateTime.now())
                 .where(lessonSubscription.id.eq(subscriptionId))
-                .setLockMode(LockModeType.PESSIMISTIC_WRITE)
                 .execute()
 
             true

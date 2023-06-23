@@ -9,7 +9,7 @@ import java.time.LocalDate
  * @since 2023/06/20
  */
 @Embeddable
-class SellingInfo(
+data class SellingInfo(
     @get:Column(name = "selling_start_date", nullable = false)
     var sellingStartDate: LocalDate = LocalDate.now(),
     @get:Column(name = "selling_end_date", nullable = false)

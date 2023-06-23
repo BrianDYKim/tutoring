@@ -2,6 +2,7 @@ package me.marketdesigners.assignment.lessonSubscription.domain.entity
 
 import jakarta.persistence.*
 import me.marketdesigners.assignment.common.entity.BaseEntity
+import me.marketdesigners.assignment.lessonSubscription.domain.entity.vo.SubscriptionPeriod
 import me.marketdesigners.assignment.lessonSubscription.domain.entity.vo.SubscriptionType
 
 /**
@@ -22,6 +23,8 @@ class LessonSubscription(
     var lessonLeftCount: Int = 0,
     @get:Embedded
     var subscriptionType: SubscriptionType = SubscriptionType(),
+    @get:Embedded
+    var subscriptionPeriod: SubscriptionPeriod = SubscriptionPeriod(),
 ) : BaseEntity() {
     // 수강 남은 횟수를 하나 차감하는 메소드
     fun minusLeftCount(): LessonSubscription {

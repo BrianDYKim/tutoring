@@ -9,7 +9,7 @@ import jakarta.persistence.Embeddable
  * @since 2023/06/22
  */
 @Embeddable
-class TutorType(
+data class TutorType(
     @get:Column(name = "is_voice_available", nullable = false)
     var isVoiceAvailable: Boolean = false,
     @get:Column(name = "is_chatting_available", nullable = false)

@@ -3,6 +3,7 @@ package me.marketdesigners.assignment.lesson.application.validator
 import me.marketdesigners.assignment.common.entity.BaseEntity
 import me.marketdesigners.assignment.common.error.ErrorCode
 import me.marketdesigners.assignment.common.exceptions.custom.ResourceNotFoundException
+import me.marketdesigners.assignment.common.exceptions.custom.SubscriptionExpiredException
 import me.marketdesigners.assignment.common.exceptions.custom.SubscriptionNotLeftException
 import me.marketdesigners.assignment.common.exceptions.custom.TutorNotSupportsLessonTypeException
 import me.marketdesigners.assignment.lesson.application.dto.LessonInbound
@@ -46,6 +47,11 @@ class LessonValidatorImpl(
         // 수강권의 잔여 횟수가 0 이하인 경우 예외처리한다
         if (!foundSubscription!!.hasPositiveLeftCount()) {
             throw SubscriptionNotLeftException()
+        }
+
+        // 수강권의 기간이 지난 경우 예외처리한다
+        if(foundSubscription.subscriptionPeriod.hasExpired()) {
+            throw SubscriptionExpiredException()
         }
 
         // 튜터가 해당 수강권의 수업을 진행할 수 없는 경우 예외를 발생한다
