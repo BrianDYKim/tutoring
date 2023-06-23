@@ -9,3 +9,95 @@ create table students
     deleted_at datetime     null,
     is_deleted tinyint(1)   not null default 0
 );
+
+create table courses
+(
+    id                 bigint(20) auto_increment primary key,
+    language           ENUM ('CHINESE', 'ENGLISH') not null,
+    is_voice_serves    tinyint(1)                  not null default 0,
+    is_chatting_serves tinyint(1)                  not null default 0,
+    is_video_serves    tinyint(1)                  not null default 0,
+    course_duration    int                         not null,
+    lesson_time        int                         not null,
+    lessons_count      int                         not null,
+    price              int                         not null,
+    selling_start_date date                        not null,
+    selling_end_date   date                        not null,
+    is_selling         tinyint(1)                  not null default 1,
+    created_at         datetime                    not null default now(),
+    updated_at         datetime                    null,
+    deleted_at         datetime                    null,
+    is_deleted         tinyint(1)                  not null default 0
+);
+
+
+INSERT INTO courses (language, is_voice_serves, is_chatting_serves, is_video_serves, course_duration, lesson_time,
+                     lessons_count, price, selling_start_date, selling_end_date, is_selling)
+VALUES ('CHINESE', 1, 1, 1, 6, 15, 90, 820000, '2023-06-01', '2023-07-15', 1),
+       ('CHINESE', 0, 1, 1, 6, 10, 30, 750000, '2023-06-01', '2023-06-30', 1),
+       ('CHINESE', 1, 0, 1, 3, 15, 90, 820000, '2023-06-15', '2023-07-15', 0),
+       ('CHINESE', 1, 1, 0, 3, 10, 30, 650000, '2023-06-16', '2023-07-30', 1),
+       ('CHINESE', 1, 0, 0, 6, 10, 30, 400000, '2023-07-01', '2023-07-30', 1),
+       ('CHINESE', 0, 0, 1, 3, 15, 90, 820000, '2023-06-01', '2023-07-15', 1),
+       ('CHINESE', 0, 1, 0, 6, 10, 30, 380000, '2023-06-01', '2023-08-01', 1),
+       ('CHINESE', 1, 0, 0, 6, 15, 90, 500000, '2023-06-01', '2023-07-15', 1),
+       ('CHINESE', 1, 0, 0, 6, 10, 30, 510000, '2023-06-01', '2023-06-30', 1),
+       ('CHINESE', 1, 0, 0, 3, 15, 90, 520000, '2023-06-15', '2023-07-15', 0),
+       ('CHINESE', 1, 0, 0, 3, 10, 30, 530000, '2023-06-16', '2023-07-30', 1),
+       ('CHINESE', 1, 0, 0, 6, 10, 30, 540000, '2023-07-01', '2023-07-30', 1),
+       ('CHINESE', 1, 0, 0, 3, 15, 90, 550000, '2023-06-01', '2023-07-15', 1),
+       ('CHINESE', 0, 1, 0, 6, 10, 30, 560000, '2023-06-01', '2023-08-01', 1),
+       ('ENGLISH', 1, 1, 1, 6, 15, 90, 820000, '2023-06-01', '2023-07-15', 1),
+       ('ENGLISH', 0, 1, 1, 6, 10, 30, 750000, '2023-06-01', '2023-06-30', 1),
+       ('ENGLISH', 1, 0, 1, 3, 15, 90, 820000, '2023-06-15', '2023-07-15', 0),
+       ('ENGLISH', 1, 1, 0, 3, 10, 30, 650000, '2023-06-16', '2023-07-30', 1),
+       ('ENGLISH', 1, 0, 0, 6, 10, 30, 400000, '2023-07-01', '2023-07-30', 1),
+       ('ENGLISH', 0, 0, 1, 3, 15, 90, 820000, '2023-06-01', '2023-07-15', 1),
+       ('ENGLISH', 0, 1, 0, 6, 10, 30, 380000, '2023-06-01', '2023-08-01', 1),
+       ('ENGLISH', 1, 0, 0, 6, 15, 90, 500000, '2023-06-01', '2023-07-15', 1),
+       ('ENGLISH', 1, 0, 0, 6, 10, 30, 510000, '2023-06-01', '2023-06-30', 1),
+       ('ENGLISH', 1, 0, 0, 3, 15, 90, 520000, '2023-06-15', '2023-07-15', 0),
+       ('ENGLISH', 1, 0, 0, 3, 10, 30, 530000, '2023-06-16', '2023-07-30', 1),
+       ('ENGLISH', 1, 0, 0, 6, 10, 30, 540000, '2023-07-01', '2023-07-30', 1),
+       ('ENGLISH', 1, 0, 0, 3, 15, 90, 550000, '2023-06-01', '2023-07-15', 1),
+       ('ENGLISH', 0, 1, 0, 6, 10, 30, 560000, '2023-06-01', '2023-08-01', 1);
+
+
+create table tutors
+(
+    id                    bigint(20) primary key auto_increment,
+    email                 varchar(40)                 not null,
+    password              varchar(150)                not null,
+    nickname              varchar(40)                 not null,
+    language              ENUM ('CHINESE', 'ENGLISH') not null,
+    is_voice_available    tinyint(1)                  not null default 0,
+    is_chatting_available tinyint(1)                  not null default 0,
+    is_video_available    tinyint(1)                  not null default 0,
+    created_at            datetime                    not null default now(),
+    updated_at            datetime                    null,
+    deleted_at            datetime                    null,
+    is_deleted            tinyint(1)                  not null default 0
+);
+
+
+create table lesson_subscriptions
+(
+    id                    bigint(20) primary key auto_increment,
+    student_id            bigint(20) not null,
+    course_id             bigint(20) not null,
+    is_voice_available    tinyint(1) not null default 0,
+    is_chatting_available tinyint(1) not null default 0,
+    is_video_available    tinyint(1) not null default 0,
+    lesson_left_count     int        not null,
+    created_at            datetime   not null default now(),
+    updated_at            datetime   null,
+    deleted_at            datetime   null,
+    is_deleted            tinyint(1) not null default 0
+);
+
+explain lesson_subscriptions;
+
+select *
+from lesson_subscriptions;
+
+drop table lesson_subscriptions;
