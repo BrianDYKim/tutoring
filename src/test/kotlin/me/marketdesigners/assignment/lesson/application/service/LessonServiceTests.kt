@@ -7,21 +7,20 @@ import io.mockk.mockk
 import io.mockk.spyk
 import io.mockk.verify
 import me.marketdesigners.assignment.common.error.ErrorCode
-import me.marketdesigners.assignment.common.exceptions.custom.ResourceNotFoundException
-import me.marketdesigners.assignment.common.exceptions.custom.SubscriptionExpiredException
-import me.marketdesigners.assignment.common.exceptions.custom.SubscriptionNotLeftException
-import me.marketdesigners.assignment.common.exceptions.custom.TutorNotSupportsLessonTypeException
+import me.marketdesigners.assignment.common.exceptions.custom.*
 import me.marketdesigners.assignment.lesson.application.dto.LessonInbound
 import me.marketdesigners.assignment.lesson.application.validator.LessonValidator
 import me.marketdesigners.assignment.lesson.application.validator.LessonValidatorImpl
 import me.marketdesigners.assignment.lesson.domain.repository.LessonRepository
 import me.marketdesigners.assignment.lessonSubscription.domain.entity.LessonSubscription
+import me.marketdesigners.assignment.lessonSubscription.domain.entity.enums.SubscriptionLanguage
 import me.marketdesigners.assignment.lessonSubscription.domain.entity.vo.SubscriptionPeriod
 import me.marketdesigners.assignment.lessonSubscription.domain.entity.vo.SubscriptionType
 import me.marketdesigners.assignment.lessonSubscription.domain.repository.LessonSubscriptionRepository
 import me.marketdesigners.assignment.student.domain.entity.Student
 import me.marketdesigners.assignment.student.domain.repository.StudentRepository
 import me.marketdesigners.assignment.tutor.domain.entity.Tutor
+import me.marketdesigners.assignment.tutor.domain.entity.enums.TutorLanguage
 import me.marketdesigners.assignment.tutor.domain.entity.vo.TutorType
 import me.marketdesigners.assignment.tutor.domain.repository.TutorRepository
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -175,6 +174,47 @@ class LessonServiceTests {
         // then
         val exception = shouldThrow<SubscriptionExpiredException> { lessonService.startLesson(startRequest) }
         assertEquals(exception.errorCode, ErrorCode.SUBSCRIPTION_EXPIRED_ERROR)
+    }
+
+    @Test
+    fun `튜터가 수강권에 명시된 언어를 수업할 수 없어 실패한다`(): Unit {
+        // given
+        val studentId: Long = 1
+        val tutorId: Long = 1
+        val lessonSubscriptionId: Long = 1
+        val lessonId: Long = 1
+
+        val startRequest = LessonInbound.StartRequest(studentId, tutorId, lessonSubscriptionId)
+
+        // 가짜 객체 선언
+        val fakeStudent = Student().apply {
+            this.id = studentId
+        }
+
+        val fakeTutor = Tutor().apply {
+            this.id = tutorId
+            this.language = TutorLanguage.ENGLISH
+            this.tutorType = TutorType(isVoiceAvailable = true, isChattingAvailable = true, isVideoAvailable = true)
+        }
+
+        val fakeSubscription = LessonSubscription().apply {
+            this.id = lessonSubscriptionId
+            this.language = SubscriptionLanguage.CHINESE
+            this.lessonLeftCount = 31
+            this.subscriptionPeriod =
+                SubscriptionPeriod(startDate = LocalDate.now().minusDays(30), endDate = LocalDate.now().plusDays(60))
+            this.subscriptionType =
+                SubscriptionType(isVoiceAvailable = true, isChattingAvailable = true, isVideoAvailable = true)
+        }
+
+        // mocking
+        every { studentRepository.findByIdOrNull(studentId) } returns fakeStudent
+        every { tutorRepository.findByIdOrNull(tutorId) } returns fakeTutor
+        every { lessonSubscriptionRepository.findByIdOrNull(lessonSubscriptionId) } returns fakeSubscription
+
+        // then
+        val exception = shouldThrow<TutorNotSupportsLanguageException> { lessonService.startLesson(startRequest) }
+        assertEquals(exception.errorCode, ErrorCode.TUTOR_NOT_SUPPORTS_LANGUAGE_ERROR)
     }
 
     @ParameterizedTest

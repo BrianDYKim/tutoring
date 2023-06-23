@@ -2,10 +2,7 @@ package me.marketdesigners.assignment.lesson.application.validator
 
 import me.marketdesigners.assignment.common.entity.BaseEntity
 import me.marketdesigners.assignment.common.error.ErrorCode
-import me.marketdesigners.assignment.common.exceptions.custom.ResourceNotFoundException
-import me.marketdesigners.assignment.common.exceptions.custom.SubscriptionExpiredException
-import me.marketdesigners.assignment.common.exceptions.custom.SubscriptionNotLeftException
-import me.marketdesigners.assignment.common.exceptions.custom.TutorNotSupportsLessonTypeException
+import me.marketdesigners.assignment.common.exceptions.custom.*
 import me.marketdesigners.assignment.lesson.application.dto.LessonInbound
 import me.marketdesigners.assignment.lessonSubscription.domain.entity.LessonSubscription
 import me.marketdesigners.assignment.lessonSubscription.domain.entity.vo.SubscriptionType
@@ -54,8 +51,13 @@ class LessonValidatorImpl(
             throw SubscriptionExpiredException()
         }
 
+        // 수강권의 언어와 튜터의 언어를 비교
+        if (foundSubscription.language.toString() != foundTutor!!.language.toString()) {
+            throw TutorNotSupportsLanguageException()
+        }
+
         // 튜터가 해당 수강권의 수업을 진행할 수 없는 경우 예외를 발생한다
-        rejectIfTutorCannotSupportLessonType(foundSubscription!!, foundTutor!!)
+        rejectIfTutorCannotSupportLessonType(foundSubscription, foundTutor)
     }
 
     /**
