@@ -7,21 +7,20 @@ import io.mockk.mockk
 import io.mockk.spyk
 import io.mockk.verify
 import me.marketdesigners.assignment.common.error.ErrorCode
-import me.marketdesigners.assignment.common.exceptions.custom.ResourceNotFoundException
-import me.marketdesigners.assignment.common.exceptions.custom.SubscriptionExpiredException
-import me.marketdesigners.assignment.common.exceptions.custom.SubscriptionNotLeftException
-import me.marketdesigners.assignment.common.exceptions.custom.TutorNotSupportsLessonTypeException
+import me.marketdesigners.assignment.common.exceptions.custom.*
 import me.marketdesigners.assignment.lesson.application.dto.LessonInbound
 import me.marketdesigners.assignment.lesson.application.validator.LessonValidator
 import me.marketdesigners.assignment.lesson.application.validator.LessonValidatorImpl
 import me.marketdesigners.assignment.lesson.domain.repository.LessonRepository
 import me.marketdesigners.assignment.lessonSubscription.domain.entity.LessonSubscription
+import me.marketdesigners.assignment.lessonSubscription.domain.entity.enums.SubscriptionLanguage
 import me.marketdesigners.assignment.lessonSubscription.domain.entity.vo.SubscriptionPeriod
 import me.marketdesigners.assignment.lessonSubscription.domain.entity.vo.SubscriptionType
 import me.marketdesigners.assignment.lessonSubscription.domain.repository.LessonSubscriptionRepository
 import me.marketdesigners.assignment.student.domain.entity.Student
 import me.marketdesigners.assignment.student.domain.repository.StudentRepository
 import me.marketdesigners.assignment.tutor.domain.entity.Tutor
+import me.marketdesigners.assignment.tutor.domain.entity.enums.TutorLanguage
 import me.marketdesigners.assignment.tutor.domain.entity.vo.TutorType
 import me.marketdesigners.assignment.tutor.domain.repository.TutorRepository
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -56,6 +55,7 @@ class LessonServiceTests {
         lessonService = spyk(LessonServiceImpl(lessonValidator, lessonRepository, lessonSubscriptionRepository))
     }
 
+    // ============================== [수업 시작 로직 테스트] ==============================
     @ParameterizedTest
     @CsvSource(value = ["1,1,1", "2,1,1"])
     fun `해당 식별자를 가지는 학생이 존재하지 않아서 실패한다`(studentId: Long, tutorId: Long, lessonSubscriptionId: Long): Unit {
@@ -130,7 +130,7 @@ class LessonServiceTests {
         }
         every { lessonSubscriptionRepository.findByIdOrNull(lessonSubscriptionId) } returns LessonSubscription().apply {
             this.id = lessonSubscriptionId
-            this.lessonLeftCount = 0
+            this.lessonCountInfo.lessonLeftCount = 0
         }
 
         // then
@@ -160,7 +160,7 @@ class LessonServiceTests {
 
         val fakeSubscription = LessonSubscription().apply {
             this.id = lessonSubscriptionId
-            this.lessonLeftCount = 31
+            this.lessonCountInfo.lessonLeftCount = 31
             this.subscriptionPeriod =
                 SubscriptionPeriod(startDate = LocalDate.now().minusDays(90), endDate = LocalDate.now().minusDays(1))
             this.subscriptionType =
@@ -175,6 +175,47 @@ class LessonServiceTests {
         // then
         val exception = shouldThrow<SubscriptionExpiredException> { lessonService.startLesson(startRequest) }
         assertEquals(exception.errorCode, ErrorCode.SUBSCRIPTION_EXPIRED_ERROR)
+    }
+
+    @Test
+    fun `튜터가 수강권에 명시된 언어를 수업할 수 없어 실패한다`(): Unit {
+        // given
+        val studentId: Long = 1
+        val tutorId: Long = 1
+        val lessonSubscriptionId: Long = 1
+        val lessonId: Long = 1
+
+        val startRequest = LessonInbound.StartRequest(studentId, tutorId, lessonSubscriptionId)
+
+        // 가짜 객체 선언
+        val fakeStudent = Student().apply {
+            this.id = studentId
+        }
+
+        val fakeTutor = Tutor().apply {
+            this.id = tutorId
+            this.language = TutorLanguage.ENGLISH
+            this.tutorType = TutorType(isVoiceAvailable = true, isChattingAvailable = true, isVideoAvailable = true)
+        }
+
+        val fakeSubscription = LessonSubscription().apply {
+            this.id = lessonSubscriptionId
+            this.language = SubscriptionLanguage.CHINESE
+            this.lessonCountInfo.lessonLeftCount = 31
+            this.subscriptionPeriod =
+                SubscriptionPeriod(startDate = LocalDate.now().minusDays(30), endDate = LocalDate.now().plusDays(60))
+            this.subscriptionType =
+                SubscriptionType(isVoiceAvailable = true, isChattingAvailable = true, isVideoAvailable = true)
+        }
+
+        // mocking
+        every { studentRepository.findByIdOrNull(studentId) } returns fakeStudent
+        every { tutorRepository.findByIdOrNull(tutorId) } returns fakeTutor
+        every { lessonSubscriptionRepository.findByIdOrNull(lessonSubscriptionId) } returns fakeSubscription
+
+        // then
+        val exception = shouldThrow<TutorNotSupportsLanguageException> { lessonService.startLesson(startRequest) }
+        assertEquals(exception.errorCode, ErrorCode.TUTOR_NOT_SUPPORTS_LANGUAGE_ERROR)
     }
 
     @ParameterizedTest
@@ -208,7 +249,7 @@ class LessonServiceTests {
         // 수강권 = 음성 o 채팅 o 화상 o
         every { lessonSubscriptionRepository.findByIdOrNull(lessonSubscriptionId) } returns LessonSubscription().apply {
             this.id = lessonSubscriptionId
-            this.lessonLeftCount = 30
+            this.lessonCountInfo.lessonLeftCount = 30
             this.subscriptionType =
                 SubscriptionType(
                     isVoiceAvailable = subscriptionVoiceAvailable,
@@ -244,7 +285,7 @@ class LessonServiceTests {
 
         val fakeSubscription = LessonSubscription().apply {
             this.id = lessonSubscriptionId
-            this.lessonLeftCount = 31
+            this.lessonCountInfo.lessonLeftCount = 31
             this.subscriptionType =
                 SubscriptionType(isVoiceAvailable = true, isChattingAvailable = true, isVideoAvailable = true)
         }
@@ -264,7 +305,7 @@ class LessonServiceTests {
         // then
         verify(exactly = 1) { studentRepository.findByIdOrNull(studentId) }
         verify(exactly = 1) { tutorRepository.findByIdOrNull(tutorId) }
-        verify(exactly = 1) { lessonSubscriptionRepository.findByIdOrNull(lessonSubscriptionId) }
+        verify(exactly = 2) { lessonSubscriptionRepository.findByIdOrNull(lessonSubscriptionId) }
         verify(exactly = 1) { lessonSubscriptionRepository.minusLeftCount(lessonSubscriptionId) }
         verify(exactly = 1) { lessonRepository.save(startRequest.toEntity()) }
 
@@ -274,5 +315,16 @@ class LessonServiceTests {
             assertEquals(this.tutorId, tutorId)
             assertEquals(this.lessonSubscriptionId, lessonSubscriptionId)
         }
+    }
+
+    // ============================== [수업 종료 로직 테스트] ==============================
+    @Test
+    fun `수업에 참가중인 튜터가 요청을 한게 아니라면 실패한다`(): Unit {
+
+    }
+
+    @Test
+    fun `모든 조건을 만족하여 수업 종료가 성립한다`(): Unit {
+
     }
 }

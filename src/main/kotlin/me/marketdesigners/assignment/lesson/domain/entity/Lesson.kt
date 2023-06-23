@@ -21,6 +21,8 @@ class Lesson(
     var tutorId: Long = 0,
     @get:Column(name = "lesson_subscription_id", nullable = false)
     var lessonSubscriptionId: Long = 0,
+    @get:Column(name = "tutor_revenue", nullable = false)
+    var tutorRevenue: Int = 0,
     @get:Embedded
     var lessonTime: LessonTime = LessonTime(),
 ) : BaseEntity() {

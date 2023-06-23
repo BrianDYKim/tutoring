@@ -25,7 +25,13 @@ sealed class LessonInbound {
         // request dto -> entity
         fun toEntity(): Lesson {
             val lessonTime = LessonTime()
-            return Lesson(null, studentId, tutorId, lessonSubscriptionId, lessonTime)
+            return Lesson(
+                id = null,
+                studentId = studentId,
+                tutorId = tutorId,
+                lessonSubscriptionId = lessonSubscriptionId,
+                lessonTime = lessonTime,
+            )
         }
     }
 }

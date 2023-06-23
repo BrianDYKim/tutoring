@@ -5,6 +5,7 @@ import me.marketdesigners.assignment.lesson.application.dto.LessonOutbound
 import me.marketdesigners.assignment.lesson.application.validator.LessonValidator
 import me.marketdesigners.assignment.lesson.domain.repository.LessonRepository
 import me.marketdesigners.assignment.lessonSubscription.domain.repository.LessonSubscriptionRepository
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -23,8 +24,14 @@ class LessonServiceImpl(
         // 검증을 수행
         this.lessonValidator.isStartAvailable(startRequest)
 
-        // 수업 엔티티를 생성하면서 시작 시간을 갱신
-        val lesson = startRequest.toEntity()
+        // 수업 엔티티를 생성하면서 시작 시간과 튜터가 받아가는 정산금을 반영
+        val subscription =
+            lessonSubscriptionRepository.findByIdOrNull(startRequest.lessonSubscriptionId)!!
+
+        // lesson entity에 tutor에게 정산해야할 금액을 같이 저장해준다
+        val lesson = startRequest.toEntity().apply {
+            this.tutorRevenue = subscription.calculateRevenuePerLesson()
+        }
         val savedLesson = lessonRepository.save(lesson)
 
         // 수강권의 남은 횟수를 하나 차감한다
