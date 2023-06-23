@@ -9,7 +9,7 @@ import jakarta.persistence.Embeddable
  * @since 2023/06/20
  */
 @Embeddable
-class CourseType(
+data class CourseType(
     @get:Column(name = "is_voice_serves", nullable = false)
     var isVoiceServes: Boolean = false,
     @get:Column(name = "is_chatting_serves", nullable = false)
