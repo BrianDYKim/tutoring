@@ -8,5 +8,9 @@ import me.marketdesigners.assignment.lesson.application.dto.LessonInbound
  * @since 2023/06/21
  */
 interface LessonValidator {
+    // 수업 시작이 가능한 요청인지 검증하는 메소드
     fun isStartAvailable(startRequest: LessonInbound.StartRequest): Unit
+
+    // 수업 종료가 가능한 요청인지 검증하는 메소드
+    fun isEndAvailable(endRequest: LessonInbound.EndRequest): Unit
 }

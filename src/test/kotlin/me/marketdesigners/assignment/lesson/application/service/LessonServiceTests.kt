@@ -14,6 +14,7 @@ import me.marketdesigners.assignment.lesson.application.validator.LessonValidato
 import me.marketdesigners.assignment.lesson.domain.repository.LessonRepository
 import me.marketdesigners.assignment.lessonSubscription.domain.entity.LessonSubscription
 import me.marketdesigners.assignment.lessonSubscription.domain.entity.enums.SubscriptionLanguage
+import me.marketdesigners.assignment.lessonSubscription.domain.entity.vo.LessonCountInfo
 import me.marketdesigners.assignment.lessonSubscription.domain.entity.vo.SubscriptionPeriod
 import me.marketdesigners.assignment.lessonSubscription.domain.entity.vo.SubscriptionType
 import me.marketdesigners.assignment.lessonSubscription.domain.repository.LessonSubscriptionRepository
@@ -285,7 +286,8 @@ class LessonServiceTests {
 
         val fakeSubscription = LessonSubscription().apply {
             this.id = lessonSubscriptionId
-            this.lessonCountInfo.lessonLeftCount = 31
+            this.lessonCountInfo = LessonCountInfo(lessonTotalCount = 90, lessonLeftCount = 31)
+            this.purchasePrice = 560000
             this.subscriptionType =
                 SubscriptionType(isVoiceAvailable = true, isChattingAvailable = true, isVideoAvailable = true)
         }

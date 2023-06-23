@@ -1,6 +1,7 @@
 package me.marketdesigners.assignment.lesson.application.dto
 
 import me.marketdesigners.assignment.lesson.domain.entity.Lesson
+import me.marketdesigners.assignment.lesson.domain.entity.vo.LessonTime
 import java.time.LocalDateTime
 
 /**
@@ -29,4 +30,13 @@ sealed class LessonOutbound {
             }
         }
     }
+
+    // 수업 종료에 대한 response dto
+    data class EndResponse(
+        val id: Long,
+        val studentId: Long,
+        val tutorId: Long,
+        val startedAt: LocalDateTime,
+        val finishedAt: LocalDateTime,
+    )
 }

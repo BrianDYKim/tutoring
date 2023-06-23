@@ -26,6 +26,13 @@ class Lesson(
     @get:Embedded
     var lessonTime: LessonTime = LessonTime(),
 ) : BaseEntity() {
+    // tutorRevenue를 새로 갱신하여 entity를 반환해주는 메소드
+    fun updateRevenue(tutorRevenue: Int): Lesson {
+        return this.apply {
+            this.tutorRevenue = tutorRevenue
+        }
+    }
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false

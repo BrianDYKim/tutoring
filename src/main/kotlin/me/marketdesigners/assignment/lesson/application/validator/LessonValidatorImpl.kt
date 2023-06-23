@@ -60,6 +60,11 @@ class LessonValidatorImpl(
         rejectIfTutorCannotSupportLessonType(foundSubscription, foundTutor)
     }
 
+    // 수업 종료가 가능한지 여부를 검증하는 메소드
+    override fun isEndAvailable(endRequest: LessonInbound.EndRequest) {
+        TODO("Not yet implemented")
+    }
+
     /**
      * 엔티티의 존재성을 검증하여 유효하지 않으면 reject 시키는 메소드
      * @param entity BaseEntity를 상속한 도메인 객체
