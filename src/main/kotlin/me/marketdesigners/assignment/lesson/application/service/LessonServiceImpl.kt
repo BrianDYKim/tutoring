@@ -41,6 +41,7 @@ class LessonServiceImpl(
 
     @Transactional
     override fun endLesson(endRequest: LessonInbound.EndRequest): LessonOutbound.EndResponse {
+        lessonValidator.isEndAvailable(endRequest)
         TODO("Not yet implemented")
     }
 }
