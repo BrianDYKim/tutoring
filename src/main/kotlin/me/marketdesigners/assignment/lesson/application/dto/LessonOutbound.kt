@@ -19,7 +19,7 @@ sealed class LessonOutbound {
     ) {
         companion object {
             // entity로부터 response dto를 추출하는 메소드
-            fun fromEntity(lesson: Lesson): LessonOutbound.StartResponse = with(lesson) {
+            fun fromEntity(lesson: Lesson): StartResponse = with(lesson) {
                 StartResponse(
                     this.id!!,
                     this.studentId,
@@ -38,5 +38,17 @@ sealed class LessonOutbound {
         val tutorId: Long,
         val startedAt: LocalDateTime,
         val finishedAt: LocalDateTime,
-    )
+    ) {
+        companion object {
+            fun fromEntity(lesson: Lesson): EndResponse = with(lesson) {
+                EndResponse(
+                    this.id!!,
+                    this.studentId,
+                    this.tutorId,
+                    this.lessonTime.startedAt,
+                    this.lessonTime.finishedAt!!,
+                )
+            }
+        }
+    }
 }

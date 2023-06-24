@@ -5,6 +5,7 @@ import me.marketdesigners.assignment.lesson.application.dto.LessonOutbound
 import me.marketdesigners.assignment.lesson.application.validator.LessonValidator
 import me.marketdesigners.assignment.lesson.domain.repository.LessonRepository
 import me.marketdesigners.assignment.lessonSubscription.domain.repository.LessonSubscriptionRepository
+import me.marketdesigners.assignment.tutor.domain.repository.TutorRepository
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -18,11 +19,12 @@ class LessonServiceImpl(
     private val lessonValidator: LessonValidator,
     private val lessonRepository: LessonRepository,
     private val lessonSubscriptionRepository: LessonSubscriptionRepository,
+    private val tutorRepository: TutorRepository,
 ) : LessonService {
     @Transactional
     override fun startLesson(startRequest: LessonInbound.StartRequest): LessonOutbound.StartResponse {
         // 검증을 수행
-        this.lessonValidator.isStartAvailable(startRequest)
+        lessonValidator.isStartAvailable(startRequest)
 
         // 수업 엔티티를 생성하면서 시작 시간과 튜터가 받아가는 정산금을 반영
         val subscription =
@@ -41,7 +43,19 @@ class LessonServiceImpl(
 
     @Transactional
     override fun endLesson(endRequest: LessonInbound.EndRequest): LessonOutbound.EndResponse {
+        // 1. 검증 수행
         lessonValidator.isEndAvailable(endRequest)
-        TODO("Not yet implemented")
+
+        // 2. 수업의 마침 시간을 새로 갱신한다
+        val foundLesson = lessonRepository.findByIdOrNull(endRequest.lessonId)!!
+        val finishedTimeUpdatedLesson = foundLesson.updateFinishedTime()
+        val savedLesson = lessonRepository.save(finishedTimeUpdatedLesson)
+
+        // 3. 튜터에게 수업료를 정산한다
+        tutorRepository.settleAmountByIdAndAmount(endRequest.tutorId, savedLesson.tutorRevenue)
+
+        // 4. (Optional) 학생의 이메일로 수업 결과를 전송한다
+
+        return LessonOutbound.EndResponse.fromEntity(savedLesson)
     }
 }

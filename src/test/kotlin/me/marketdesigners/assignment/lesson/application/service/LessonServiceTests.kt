@@ -33,6 +33,7 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
 import org.junit.jupiter.params.provider.ValueSource
 import org.springframework.data.repository.findByIdOrNull
+import java.math.BigInteger
 import java.time.LocalDate
 
 /**
@@ -59,10 +60,10 @@ class LessonServiceTests {
                 studentRepository,
                 tutorRepository,
                 lessonSubscriptionRepository,
-                lessonRepository
+                lessonRepository,
             )
         )
-        lessonService = spyk(LessonServiceImpl(lessonValidator, lessonRepository, lessonSubscriptionRepository))
+        lessonService = spyk(LessonServiceImpl(lessonValidator, lessonRepository, lessonSubscriptionRepository, tutorRepository))
     }
 
     // ============================== [수업 시작 로직 테스트] ==============================
@@ -388,6 +389,21 @@ class LessonServiceTests {
     @CsvSource(value = ["1,1", "2,2"])
     fun `모든 조건을 만족하여 수업 종료가 성립한다`(lessonId: Long, tutorId: Long): Unit {
         // given
+        val endRequest = LessonInbound.EndRequest(lessonId = lessonId, tutorId = tutorId)
 
+        every { lessonRepository.findByIdOrNull(lessonId) } returns Lesson().apply {
+            this.id = lessonId
+            this.tutorId = tutorId
+        }
+
+
+
+        every { tutorRepository.findByIdOrNull(tutorId) } returns Tutor().apply {
+            this.id = tutorId
+        }
+
+        // when
+
+        // then
     }
 }

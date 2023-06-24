@@ -3,6 +3,7 @@ package me.marketdesigners.assignment.lesson.domain.entity
 import jakarta.persistence.*
 import me.marketdesigners.assignment.common.entity.BaseEntity
 import me.marketdesigners.assignment.lesson.domain.entity.vo.LessonTime
+import java.time.LocalDateTime
 
 /**
  * 수업에 대한 entity를 표현하는 객체
@@ -30,6 +31,13 @@ class Lesson(
     fun updateRevenue(tutorRevenue: Int): Lesson {
         return this.apply {
             this.tutorRevenue = tutorRevenue
+        }
+    }
+
+    // 종료 시간을 갱신하여 엔티티를 새로 반환해주는 메소드
+    fun updateFinishedTime(): Lesson {
+        return this.apply {
+            this.lessonTime.finishedAt = LocalDateTime.now()
         }
     }
 

@@ -33,6 +33,7 @@ class LessonController(
     // 수업 종료를 처리하는 핸들러 메소드
     @PutMapping("/end")
     fun endLesson(@Valid @RequestBody endRequest: LessonInbound.EndRequest): SuccessResults.Single<LessonOutbound.EndResponse> {
-        TODO("Not yet implemented")
+        val endResponse = lessonService.endLesson(endRequest)
+        return ResponseGenerator.getSingleDataResponse(endResponse)
     }
 }
