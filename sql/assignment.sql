@@ -79,6 +79,7 @@ create table tutors
     is_voice_available    tinyint(1)                  not null default 0,
     is_chatting_available tinyint(1)                  not null default 0,
     is_video_available    tinyint(1)                  not null default 0,
+    unsettled_amount      decimal(20, 0)              not null default 0,
     created_at            datetime                    not null default now(),
     updated_at            datetime                    null,
     deleted_at            datetime                    null,
