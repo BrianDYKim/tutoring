@@ -63,7 +63,8 @@ class LessonServiceTests {
                 lessonRepository,
             )
         )
-        lessonService = spyk(LessonServiceImpl(lessonValidator, lessonRepository, lessonSubscriptionRepository, tutorRepository))
+        lessonService =
+            spyk(LessonServiceImpl(lessonValidator, lessonRepository, lessonSubscriptionRepository, tutorRepository))
     }
 
     // ============================== [수업 시작 로직 테스트] ==============================
@@ -390,20 +391,30 @@ class LessonServiceTests {
     fun `모든 조건을 만족하여 수업 종료가 성립한다`(lessonId: Long, tutorId: Long): Unit {
         // given
         val endRequest = LessonInbound.EndRequest(lessonId = lessonId, tutorId = tutorId)
-
-        every { lessonRepository.findByIdOrNull(lessonId) } returns Lesson().apply {
+        val fakeLesson = Lesson().apply {
             this.id = lessonId
             this.tutorId = tutorId
+            this.tutorRevenue = 5000
         }
-
-
-
-        every { tutorRepository.findByIdOrNull(tutorId) } returns Tutor().apply {
+        val fakeTutor = Tutor().apply {
             this.id = tutorId
         }
 
+        every { lessonRepository.findByIdOrNull(lessonId) } returns fakeLesson
+        every { tutorRepository.findByIdOrNull(tutorId) } returns fakeTutor
+        every { lessonRepository.save(fakeLesson.updateFinishedTime()) } returns fakeLesson.updateFinishedTime()
+
         // when
+        val finishedLesson = lessonService.endLesson(endRequest)
 
         // then
+        verify(exactly = 2) { lessonRepository.findByIdOrNull(lessonId) }
+        verify(exactly = 1) { tutorRepository.findByIdOrNull(tutorId) }
+        verify(exactly = 1) { tutorRepository.settleAmountByIdAndAmount(tutorId, fakeLesson.tutorRevenue) }
+        verify(exactly = 1) { lessonRepository.save(fakeLesson.updateFinishedTime()) }
+        with(finishedLesson) {
+            assertEquals(this.id, lessonId)
+            assertEquals(this.tutorId, tutorId)
+        }
     }
 }
