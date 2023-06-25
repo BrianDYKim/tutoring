@@ -46,7 +46,7 @@ class LessonValidatorImpl(
             throw SubscriptionNotLeftException()
         }
 
-        // 수강권의 기간이 지난 경우 예외처리한다==
+        // 수강권의 기간이 지난 경우 예외처리한다
         if(foundSubscription.subscriptionPeriod.hasExpired()) {
             throw SubscriptionExpiredException()
         }
@@ -70,6 +70,11 @@ class LessonValidatorImpl(
         // Lesson에 배정된 튜터가 아닌 경우 예외를 발생시킨다
         if (foundLesson!!.tutorId != endRequest.tutorId) {
             throw UnauthorizedTutorException()
+        }
+
+        // lesson이 이미 종료되어있는 경우에는 예외를 발생시킨다
+        if (foundLesson.lessonTime.hasAlreadyFinished()) {
+            throw LessonAlreadyFinishedException()
         }
 
         // Tutor가 존재하지 않는 경우 예외를 발생시킨다

@@ -27,4 +27,5 @@ enum class ErrorCode(
     TUTOR_NOT_SUPPORTS_LANGUAGE_ERROR(400, "튜터가 해당 언어를 수업할 수 없습니다"),
     LESSON_NOT_FOUND_ERROR(400, "수업이 존재하지 않습니다"),
     UNAUTHORIZED_TUTOR_ERROR(400, "권한이 존재하지 않습니다"),
+    LESSON_ALREADY_FINISHED_ERROR(400, "수업이 이미 종료되었습니다"),
 }

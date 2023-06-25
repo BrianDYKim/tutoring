@@ -35,6 +35,7 @@ import org.junit.jupiter.params.provider.ValueSource
 import org.springframework.data.repository.findByIdOrNull
 import java.math.BigInteger
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 /**
  * @author Doyeop Kim
@@ -365,6 +366,23 @@ class LessonServiceTests {
     }
 
     @ParameterizedTest
+    @CsvSource(value = ["1,1"])
+    fun `이미 종료된 수업에 대해서 종료를 요청하면 실패한다`(lessonId: Long, tutorId: Long): Unit {
+        // given: 이미 종료된 수업이면 예외를 일으킨다
+        val endRequest = LessonInbound.EndRequest(lessonId = lessonId, tutorId = tutorId)
+
+        every { lessonRepository.findByIdOrNull(lessonId) } returns Lesson().apply {
+            this.id = lessonId
+            this.tutorId = tutorId
+            this.lessonTime.finishedAt = LocalDateTime.now()
+        }
+
+        // then
+        val exception = shouldThrow<LessonAlreadyFinishedException> { lessonService.endLesson(endRequest) }
+        assertEquals(exception.errorCode, ErrorCode.LESSON_ALREADY_FINISHED_ERROR)
+    }
+
+    @ParameterizedTest
     @CsvSource(value = ["1,1", "2,2"])
     fun `실제 존재하지 않는 튜터인 경우 실패한다`(lessonId: Long, tutorId: Long): Unit {
         // given: tutorId로 식별되는 튜터가 실제로 존재하지 않는 경우 실패한다
@@ -396,13 +414,22 @@ class LessonServiceTests {
             this.tutorId = tutorId
             this.tutorRevenue = 5000
         }
+        val finishedTimeUpdatedLesson = Lesson().apply {
+            this.id = lessonId
+            this.tutorId = tutorId
+            this.lessonTime.finishedAt = LocalDateTime.now()
+            this.tutorRevenue = 5000
+        }
         val fakeTutor = Tutor().apply {
             this.id = tutorId
         }
 
         every { lessonRepository.findByIdOrNull(lessonId) } returns fakeLesson
         every { tutorRepository.findByIdOrNull(tutorId) } returns fakeTutor
-        every { lessonRepository.save(fakeLesson.updateFinishedTime()) } returns fakeLesson.updateFinishedTime()
+        every { lessonRepository.save(fakeLesson.updateFinishedTime()) } returns finishedTimeUpdatedLesson
+
+        // save 메소드를 mock 하는 과정에서 finishedAt이 now()로 초기화되는 현상을 막기 위한 코드
+        fakeLesson.lessonTime.finishedAt = null
 
         // when
         val finishedLesson = lessonService.endLesson(endRequest)
