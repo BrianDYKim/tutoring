@@ -11,9 +11,11 @@ import me.marketdesigners.assignment.common.exceptions.custom.*
 import me.marketdesigners.assignment.lesson.application.dto.LessonInbound
 import me.marketdesigners.assignment.lesson.application.validator.LessonValidator
 import me.marketdesigners.assignment.lesson.application.validator.LessonValidatorImpl
+import me.marketdesigners.assignment.lesson.domain.entity.Lesson
 import me.marketdesigners.assignment.lesson.domain.repository.LessonRepository
 import me.marketdesigners.assignment.lessonSubscription.domain.entity.LessonSubscription
 import me.marketdesigners.assignment.lessonSubscription.domain.entity.enums.SubscriptionLanguage
+import me.marketdesigners.assignment.lessonSubscription.domain.entity.vo.LessonCountInfo
 import me.marketdesigners.assignment.lessonSubscription.domain.entity.vo.SubscriptionPeriod
 import me.marketdesigners.assignment.lessonSubscription.domain.entity.vo.SubscriptionType
 import me.marketdesigners.assignment.lessonSubscription.domain.repository.LessonSubscriptionRepository
@@ -29,7 +31,9 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
+import org.junit.jupiter.params.provider.ValueSource
 import org.springframework.data.repository.findByIdOrNull
+import java.math.BigInteger
 import java.time.LocalDate
 
 /**
@@ -51,8 +55,16 @@ class LessonServiceTests {
         studentRepository = mockk(relaxed = true, relaxUnitFun = true)
         tutorRepository = mockk(relaxed = true, relaxUnitFun = true)
         lessonSubscriptionRepository = mockk(relaxed = true, relaxUnitFun = true)
-        lessonValidator = spyk(LessonValidatorImpl(studentRepository, tutorRepository, lessonSubscriptionRepository))
-        lessonService = spyk(LessonServiceImpl(lessonValidator, lessonRepository, lessonSubscriptionRepository))
+        lessonValidator = spyk(
+            LessonValidatorImpl(
+                studentRepository,
+                tutorRepository,
+                lessonSubscriptionRepository,
+                lessonRepository,
+            )
+        )
+        lessonService =
+            spyk(LessonServiceImpl(lessonValidator, lessonRepository, lessonSubscriptionRepository, tutorRepository))
     }
 
     // ============================== [수업 시작 로직 테스트] ==============================
@@ -285,7 +297,8 @@ class LessonServiceTests {
 
         val fakeSubscription = LessonSubscription().apply {
             this.id = lessonSubscriptionId
-            this.lessonCountInfo.lessonLeftCount = 31
+            this.lessonCountInfo = LessonCountInfo(lessonTotalCount = 90, lessonLeftCount = 31)
+            this.purchasePrice = 560000
             this.subscriptionType =
                 SubscriptionType(isVoiceAvailable = true, isChattingAvailable = true, isVideoAvailable = true)
         }
@@ -318,13 +331,90 @@ class LessonServiceTests {
     }
 
     // ============================== [수업 종료 로직 테스트] ==============================
-    @Test
-    fun `수업에 참가중인 튜터가 요청을 한게 아니라면 실패한다`(): Unit {
+    @ParameterizedTest
+    @CsvSource(value = ["1,1", "2,1"])
+    fun `존재하지 않는 수업에 대해서 요청하는 경우 실패한다`(lessonId: Long, tutorId: Long): Unit {
+        // given: lessonId로 조회 시 null 혹은 isDeleted = true 인 경우의 실패 테스트를 수행한다
+        val endRequest = LessonInbound.EndRequest(lessonId = lessonId, tutorId = tutorId)
 
+        every { lessonRepository.findByIdOrNull(1) } returns null
+        every { lessonRepository.findByIdOrNull(2) } returns Lesson().apply {
+            this.id = 2
+            this.isDeleted = true
+        }
+
+        // then
+        val exception = shouldThrow<ResourceNotFoundException> { lessonService.endLesson(endRequest) }
+        assertEquals(exception.errorCode, ErrorCode.LESSON_NOT_FOUND_ERROR)
     }
 
-    @Test
-    fun `모든 조건을 만족하여 수업 종료가 성립한다`(): Unit {
+    @ParameterizedTest
+    @CsvSource(value = ["1,2"])
+    fun `수업에 배정된 튜터가 요청한게 아니라면 실패한다`(lessonId: Long, tutorId: Long): Unit {
+        // given: tutorId로 조회 시 null 혹은 isDeleted = true 인 경우의 실패 테스트를 수행한다
+        val endRequest = LessonInbound.EndRequest(lessonId = lessonId, tutorId = tutorId)
 
+        every { lessonRepository.findByIdOrNull(lessonId) } returns Lesson().apply {
+            this.id = lessonId
+            this.tutorId = 1
+        }
+
+        // then
+        val exception = shouldThrow<UnauthorizedTutorException> { lessonService.endLesson(endRequest) }
+        assertEquals(exception.errorCode, ErrorCode.UNAUTHORIZED_TUTOR_ERROR)
+    }
+
+    @ParameterizedTest
+    @CsvSource(value = ["1,1", "2,2"])
+    fun `실제 존재하지 않는 튜터인 경우 실패한다`(lessonId: Long, tutorId: Long): Unit {
+        // given: tutorId로 식별되는 튜터가 실제로 존재하지 않는 경우 실패한다
+        val endRequest = LessonInbound.EndRequest(lessonId = lessonId, tutorId = tutorId)
+
+        every { lessonRepository.findByIdOrNull(lessonId) } returns Lesson().apply {
+            this.id = lessonId
+            this.tutorId = tutorId
+        }
+
+        // 튜터는 null 이거나 isDeleted = true 이면 실패한다
+        every { tutorRepository.findByIdOrNull(1) } returns null
+        every { tutorRepository.findByIdOrNull(2) } returns Tutor().apply {
+            this.isDeleted = true
+        }
+
+        // then
+        val exception = shouldThrow<ResourceNotFoundException> { lessonService.endLesson(endRequest) }
+        assertEquals(exception.errorCode, ErrorCode.TUTOR_NOT_FOUND_ERROR)
+    }
+
+    @ParameterizedTest
+    @CsvSource(value = ["1,1", "2,2"])
+    fun `모든 조건을 만족하여 수업 종료가 성립한다`(lessonId: Long, tutorId: Long): Unit {
+        // given
+        val endRequest = LessonInbound.EndRequest(lessonId = lessonId, tutorId = tutorId)
+        val fakeLesson = Lesson().apply {
+            this.id = lessonId
+            this.tutorId = tutorId
+            this.tutorRevenue = 5000
+        }
+        val fakeTutor = Tutor().apply {
+            this.id = tutorId
+        }
+
+        every { lessonRepository.findByIdOrNull(lessonId) } returns fakeLesson
+        every { tutorRepository.findByIdOrNull(tutorId) } returns fakeTutor
+        every { lessonRepository.save(fakeLesson.updateFinishedTime()) } returns fakeLesson.updateFinishedTime()
+
+        // when
+        val finishedLesson = lessonService.endLesson(endRequest)
+
+        // then
+        verify(exactly = 2) { lessonRepository.findByIdOrNull(lessonId) }
+        verify(exactly = 1) { tutorRepository.findByIdOrNull(tutorId) }
+        verify(exactly = 1) { tutorRepository.settleAmountByIdAndAmount(tutorId, fakeLesson.tutorRevenue) }
+        verify(exactly = 1) { lessonRepository.save(fakeLesson.updateFinishedTime()) }
+        with(finishedLesson) {
+            assertEquals(this.id, lessonId)
+            assertEquals(this.tutorId, tutorId)
+        }
     }
 }

@@ -34,4 +34,14 @@ sealed class LessonInbound {
             )
         }
     }
+
+    // 수업 종료에 대한 response dto
+    data class EndRequest(
+        @field:NotNull
+        @field:Positive
+        val lessonId: Long,
+        @field:NotNull
+        @field:Positive
+        val tutorId: Long,
+    )
 }

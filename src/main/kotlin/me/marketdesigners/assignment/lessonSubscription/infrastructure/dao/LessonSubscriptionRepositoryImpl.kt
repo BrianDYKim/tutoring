@@ -30,9 +30,7 @@ class LessonSubscriptionRepositoryImpl(
                 )
                 .set(lessonSubscription.updatedAt, LocalDateTime.now())
                 .where(lessonSubscription.id.eq(subscriptionId))
-                .execute()
-
-            true
+                .execute() > 0
         } ?: false
     }
 }

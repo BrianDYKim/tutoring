@@ -9,5 +9,5 @@ import org.springframework.stereotype.Repository
  * @since 2023/06/21
  */
 @Repository
-interface TutorRepository : JpaRepository<Tutor, Long> {
+interface TutorRepository : JpaRepository<Tutor, Long>, TutorRepositoryCustom {
 }
