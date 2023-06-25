@@ -39,9 +39,15 @@ docker run -p 8080:8080 assignment-doccimann:latest
 - JPA (Java Persistence API)
 
 ### Test (Unit Test)
-- Mockk, kotest, JUnit5
+- MockK, kotest, JUnit5
 
 ### 배포도구
 - Docker
 
 ## 설계 고려 사항
+
+### 객체지도 (도메인 설계)
+
+과제 요구사항 중에 커맨드 로직만을 따져서 객체간의 협력 관계를 따져서 다이어그램으로 그려보면 아래와 같습니다.
+
+<img src="./document/object_diagram.png" alt="object_diagram" width="1600" height="1000">
