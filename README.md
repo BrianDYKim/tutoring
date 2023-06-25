@@ -36,7 +36,7 @@ docker run -p 8080:8080 assignment-doccimann:latest
 - MySQL
 
 ### ORM
-- JPA (Java Persistence API)
+- JPA (Java Persistence API), QueryDSL
 
 ### Test (Unit Test)
 - MockK, kotest, JUnit5
@@ -51,3 +51,7 @@ docker run -p 8080:8080 assignment-doccimann:latest
 과제 요구사항 중에 커맨드 로직만을 따져서 객체간의 협력 관계를 따져서 다이어그램으로 그려보면 아래와 같습니다.
 
 <img src="./document/object_diagram.png" alt="object_diagram" width="1600" height="1000">
+
+해당 객체 지도를 고려하여 작성한 ERD 다이어그램은 아래와 같습니다.
+
+<img src="./document/erd_diagram.png" alt="erd_diagram" width="1016" height="1524">
