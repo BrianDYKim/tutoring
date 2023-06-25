@@ -1,6 +1,7 @@
 package me.marketdesigners.assignment.lesson.application.dto
 
 import me.marketdesigners.assignment.lesson.domain.entity.Lesson
+import me.marketdesigners.assignment.lesson.domain.entity.vo.LessonTime
 import java.time.LocalDateTime
 
 /**
@@ -18,13 +19,34 @@ sealed class LessonOutbound {
     ) {
         companion object {
             // entity로부터 response dto를 추출하는 메소드
-            fun fromEntity(lesson: Lesson): LessonOutbound.StartResponse = with(lesson) {
+            fun fromEntity(lesson: Lesson): StartResponse = with(lesson) {
                 StartResponse(
                     this.id!!,
                     this.studentId,
                     this.tutorId,
                     this.lessonSubscriptionId,
                     this.lessonTime.startedAt
+                )
+            }
+        }
+    }
+
+    // 수업 종료에 대한 response dto
+    data class EndResponse(
+        val id: Long,
+        val studentId: Long,
+        val tutorId: Long,
+        val startedAt: LocalDateTime,
+        val finishedAt: LocalDateTime,
+    ) {
+        companion object {
+            fun fromEntity(lesson: Lesson): EndResponse = with(lesson) {
+                EndResponse(
+                    this.id!!,
+                    this.studentId,
+                    this.tutorId,
+                    this.lessonTime.startedAt,
+                    this.lessonTime.finishedAt!!,
                 )
             }
         }

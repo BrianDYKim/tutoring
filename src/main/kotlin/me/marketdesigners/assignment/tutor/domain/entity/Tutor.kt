@@ -4,6 +4,7 @@ import jakarta.persistence.*
 import me.marketdesigners.assignment.common.entity.BaseEntity
 import me.marketdesigners.assignment.tutor.domain.entity.enums.TutorLanguage
 import me.marketdesigners.assignment.tutor.domain.entity.vo.TutorType
+import java.math.BigInteger
 
 /**
  * @author Doyeop Kim
@@ -24,6 +25,8 @@ class Tutor(
     @get:Column(name = "language", nullable = false)
     @get:Enumerated(EnumType.STRING)
     var language: TutorLanguage = TutorLanguage.ENGLISH,
+    @get:Column(name = "unsettled_amount", nullable = false)
+    var unsettiledAmount: BigInteger = BigInteger.valueOf(0),
     @get:Embedded
     var tutorType: TutorType = TutorType(),
 ) : BaseEntity() {
