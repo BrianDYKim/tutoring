@@ -16,6 +16,7 @@ enum class ErrorCode(
     AUTHENTICATION_ERROR(401, "허용되지 않은 접근입니다"),
     AUTHORIZATION_ERROR(403, "올바르지 않은 권한입니다"),
     RESOURCE_NOT_FOUND_ERROR(404, "리소스가 존재하지 않습니다"),
+    UNKNOWN_ERROR(500, "알 수 없는 에러입니다"),
 
     // Custom Error codes
     STUDENT_NOT_FOUND_ERROR(400, "학생이 존재하지 않습니다"),
@@ -27,4 +28,5 @@ enum class ErrorCode(
     TUTOR_NOT_SUPPORTS_LANGUAGE_ERROR(400, "튜터가 해당 언어를 수업할 수 없습니다"),
     LESSON_NOT_FOUND_ERROR(400, "수업이 존재하지 않습니다"),
     UNAUTHORIZED_TUTOR_ERROR(400, "권한이 존재하지 않습니다"),
+    LESSON_ALREADY_FINISHED_ERROR(400, "수업이 이미 종료되었습니다"),
 }

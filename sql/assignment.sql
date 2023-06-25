@@ -13,9 +13,6 @@ create table students
 insert into students (email, password, nickname)
 values ('student1@example.com', 'password1', '학생1');
 
-select *
-from students;
-
 create table courses
 (
     id                 bigint(20) auto_increment primary key,
@@ -36,6 +33,18 @@ create table courses
     is_deleted         tinyint(1)                  not null default 0
 );
 
+# courses의 index 생성
+alter table `courses`
+    add index `is_selling_idx` (`is_selling` asc) visible;
+
+alter table `courses`
+    add index `selling_date_idx` (`selling_start_date`, `selling_end_date`) visible;
+
+alter table `courses`
+    add index `course_type_idx` (`is_chatting_serves`, `is_voice_serves`, `is_video_serves`) visible;
+
+alter table `courses`
+    add index `language_idx` (`language`) visible;
 
 INSERT INTO courses (language, is_voice_serves, is_chatting_serves, is_video_serves, course_duration, lesson_time,
                      lessons_count, price, selling_start_date, selling_end_date, is_selling)
@@ -92,9 +101,6 @@ values ('tutor1@example.com', 'password1', '튜터1', 'ENGLISH', 1, 1, 0),
        ('tutor3@example.com', 'password3', '튜터3', 'CHINESE', 1, 1, 0),
        ('tutor4@example.com', 'password4', '튜터4', 'CHINESE', 1, 0, 1);
 
-select *
-from tutors;
-
 
 create table lesson_subscriptions
 (
@@ -116,8 +122,6 @@ create table lesson_subscriptions
     is_deleted            tinyint(1)                  not null default 0
 );
 
-drop table lesson_subscriptions;
-
 insert into lesson_subscriptions (student_id, course_id, language, purchase_price, is_voice_available,
                                   is_chatting_available,
                                   is_video_available,
@@ -125,12 +129,6 @@ insert into lesson_subscriptions (student_id, course_id, language, purchase_pric
                                   lesson_left_count, start_date, end_date)
 values (1, 18, 'ENGLISH', 650000, 1, 1, 0, 90, 90, '2023-06-20', '2023-09-10'),
        (1, 18, 'ENGLISH', 650000, 1, 1, 0, 90, 90, '2023-03-10', '2023-06-20');
-
-select *
-from courses;
-
-select *
-from lesson_subscriptions;
 
 create table lessons
 (
@@ -146,16 +144,3 @@ create table lessons
     deleted_at             datetime   null,
     is_deleted             tinyint(1) not null default 0
 );
-
-drop table lessons;
-
-explain lessons;
-
-select *
-from lessons;
-
-explain
-select *
-from lesson_subscriptions
-where id = 1 for
-    update;

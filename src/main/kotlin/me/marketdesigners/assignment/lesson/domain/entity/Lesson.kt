@@ -37,7 +37,8 @@ class Lesson(
     // 종료 시간을 갱신하여 엔티티를 새로 반환해주는 메소드
     fun updateFinishedTime(): Lesson {
         return this.apply {
-            this.lessonTime.finishedAt = LocalDateTime.now()
+            val updatedLessonTime = lessonTime.updateFinishedTime(LocalDateTime.now())
+            this.lessonTime = updatedLessonTime
         }
     }
 
