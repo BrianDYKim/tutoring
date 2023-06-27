@@ -1,4 +1,4 @@
-# 튜터링 사전과제
+# 튜터링
 by 김도엽 (Doccimann)
 
 ## 실행 방법
@@ -44,7 +44,7 @@ docker run -p 8080:8080 assignment-doccimann:latest
 
 ### 객체지도 (도메인 설계)
 
-과제 요구사항 중에 커맨드 로직만을 따져서 객체간의 협력 관계를 따져서 다이어그램으로 그려보면 아래와 같습니다.
+요구사항 중에 커맨드 로직만을 따져서 객체간의 협력 관계를 따져서 다이어그램으로 그려보면 아래와 같습니다.
 
 <img src="./document/object_diagram.png" alt="object_diagram" width="1600" height="1000">
 
