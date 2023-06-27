@@ -1,4 +1,4 @@
-rootProject.name = "assignment"
+rootProject.name = "tutoring"
 
 pluginManagement {
     val kotlinVersion = "1.8.21"

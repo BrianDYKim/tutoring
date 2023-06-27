@@ -14,7 +14,7 @@ RUN gradle build -x test --parallel
 # 실행 환경에서는 JDK가 아닌 JRE를 사용하여 최대한 경량화
 FROM openjdk:17.0.1-jdk-slim
 WORKDIR /app
-ARG APP_NAME=assignment
+ARG APP_NAME=tutoring
 ARG VERSION=0.0.1
 COPY --from=BUILDER /builder/build/libs/${APP_NAME}-${VERSION}.jar ./app.jar
 EXPOSE 8080
