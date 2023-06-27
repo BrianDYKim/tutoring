@@ -3,9 +3,9 @@ spring:
     time-zone: UTC
 
   datasource:
-    url: jdbc:mysql://studying-code-dev.cwvafkgrjx7h.ap-northeast-2.rds.amazonaws.com:3306/codeDev?useSSL=false&useUnicode=true&serverTimezone=UTC
-    username: brian
-    password: doccimann!
+    url: jdbc:mysql://<your-mysql-host>:3306/<db_name>?useSSL=false&useUnicode=true&serverTimezone=UTC
+    username: <usernmae>
+    password: <password>
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:

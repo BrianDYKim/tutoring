@@ -3,10 +3,6 @@ by 김도엽 (Doccimann)
 
 ## 실행 방법
 
-현재 application.yml 을 통해서 AWS RDS를 통해 띄워둔 MySQL과 해당 어플리케이션이 연동되어있습니다.
-
-따라서 아래의 커맨드를 통해 바로 실행 가능합니다.
-
 ~~~bash
 # Docker build
 docker build -t assignment-doccimann:latest .
